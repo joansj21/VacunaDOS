@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import crypto from 'crypto-js';
+import { sha256 } from 'crypto-hash';
 import './GameJoin.css';
 
 function GameJoin(props) {
@@ -58,7 +58,7 @@ function GameJoin(props) {
     }
 
 
-    const onCreateGame = (e) => {
+    const onCreateGame = async (e) => {
         e.preventDefault();
 
         let url = props.getUrl()+'/game/create'
@@ -68,7 +68,7 @@ function GameJoin(props) {
             headers: { 'name': props.player.name, 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 'name': NameGameRef.current.value,
-                'password': crypto.AES.encrypt(passGameRef.current.value, 'my-secret-key@123').toString()
+                'password': await sha256(passGameRef.current.value)
             })
         };
         fetch(url, requestOptions)
@@ -79,11 +79,11 @@ function GameJoin(props) {
                 const errorData = await response.json();
                 return Promise.reject(errorData);
             })
-            .then(data => {
+            .then(async data => {
                 props.setPlayer({
                     ...props.player,
                     'gameId': data.gameId,
-                    'password': crypto.AES.encrypt(passGameRef.current.value, 'my-secret-key@123').toString(),
+                    'password': await sha256(passGameRef.current.value),
                     'disableturn': [false, false, false, false, false]
                 })
             })
@@ -97,14 +97,14 @@ function GameJoin(props) {
     }
 
 
-    const onJoinGame = (e) => {
+    const onJoinGame = async (e) => {
         e.preventDefault();
 
         let url = props.getUrl()+'/game/' + idNameref.current.value + '/join'
 
         const requestOptions = {
             method: 'PUT',
-            headers: { 'name': props.player.name, 'password': crypto.AES.encrypt(passGameJoin.current.value, 'my-secret-key@123').toString(), 'Content-Type': 'application/json' },
+            headers: { 'name': props.player.name, 'password': await sha256(passGameJoin.current.value), 'Content-Type': 'application/json' },
         };
         fetch(url, requestOptions)
             .then(async response => {
@@ -114,10 +114,10 @@ function GameJoin(props) {
                 const errorData = await response.json();
                 return Promise.reject(errorData);
             })
-            .then(data => props.setPlayer({
+            .then(async data => props.setPlayer({
                 ...props.player,
                 'gameId': idNameref.current.value,
-                'password': crypto.AES.encrypt(passGameJoin.current.value, 'my-secret-key@123').toString()
+                'password': await sha256(passGameJoin.current.value)
             }))
             .catch(data =>
                 setdataGame(

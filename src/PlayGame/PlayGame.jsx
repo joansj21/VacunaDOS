@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useState } from "react";
-import crypto from 'crypto-js';
 import './PlayGame.css';
 
 function PlayGame(props) {
@@ -245,7 +244,6 @@ function PlayGame(props) {
                             <div className="lobby-info">
                                 <div>
                                     <div><b>ID Game:</b> {dataGame.gameId}</div>
-                                    <div><b>Contraseña:</b> {crypto.AES.decrypt(dataGame.password, 'my-secret-key@123').toString(crypto.enc.Utf8)}</div>
                                 </div>
 
                                 <div className="lobby-players">
