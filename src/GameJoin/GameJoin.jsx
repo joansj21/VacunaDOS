@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { sha256 } from 'crypto-hash';
 import './GameJoin.css';
 
 function GameJoin(props) {
@@ -68,7 +67,7 @@ function GameJoin(props) {
             headers: { 'name': props.player.name, 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 'name': NameGameRef.current.value,
-                'password': await sha256(passGameRef.current.value)
+                'password': passGameRef.current.value
             })
         };
         fetch(url, requestOptions)
@@ -83,7 +82,7 @@ function GameJoin(props) {
                 props.setPlayer({
                     ...props.player,
                     'gameId': data.gameId,
-                    'password': await sha256(passGameRef.current.value),
+                    'password': passGameRef.current.value,
                     'disableturn': [false, false, false, false, false]
                 })
             })
@@ -104,7 +103,7 @@ function GameJoin(props) {
 
         const requestOptions = {
             method: 'PUT',
-            headers: { 'name': props.player.name, 'password': await sha256(passGameJoin.current.value), 'Content-Type': 'application/json' },
+            headers: { 'name': props.player.name, 'password': passGameJoin.current.value, 'Content-Type': 'application/json' },
         };
         fetch(url, requestOptions)
             .then(async response => {
@@ -117,7 +116,7 @@ function GameJoin(props) {
             .then(async data => props.setPlayer({
                 ...props.player,
                 'gameId': idNameref.current.value,
-                'password': await sha256(passGameJoin.current.value)
+                'password': passGameJoin.current.value
             }))
             .catch(data =>
                 setdataGame(
